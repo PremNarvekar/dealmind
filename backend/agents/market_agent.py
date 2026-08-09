@@ -13,7 +13,7 @@ from models.memo import MarketResult
 
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-3.1-pro-preview",
+    model="gemini-3.1-flash-lite",
     temperature=0
 )
 
@@ -56,7 +56,7 @@ def market_agent(company_name: str) -> MarketResult:
     response = llm_with_tools.invoke(message)
     message.append(response)
     
-    while response.tool_Calls:
+    while response.tool_calls:
         
         for tool_call in response.tool_calls:
             
@@ -84,7 +84,7 @@ def market_agent(company_name: str) -> MarketResult:
             )
         )
             
-        response = llm_with_tools.invoke(messages)
+        response = llm_with_tools.invoke(message)
         message.append(response)
         
     structured_llm = llm.with_structured_output(MarketResult)

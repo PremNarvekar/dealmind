@@ -17,7 +17,7 @@ class MarketResult(BaseModel):
     summary: str
     
 class TeamResult(BaseModel):
-    founders: List(str) = Field(default_factory=list)
+    founders: List[str] = Field(default_factory=list)
     previous_companies:List[str] = Field(default_factory=list)
     strengths: List[str] = Field(default_factory=list)
     concerns: List[str] = Field(default_factory=list)
@@ -26,10 +26,10 @@ class TeamResult(BaseModel):
     
 class ProductResult(BaseModel):
     product_name: str
-    tech_stack: List(str) = Field(default_factory=list)
-    differentiators:LIst(str) = Field(default_factory=list)
-    strengths: List(str) = Field(default_factory=list)
-    weakness: List(str) = Field(default_factory=list)
+    tech_stack: List[str] = Field(default_factory=list)
+    differentiators:List[str] = Field(default_factory=list)
+    strengths: List[str] = Field(default_factory=list)
+    weakness: List[str] = Field(default_factory=list)
     summary: str
 
 class InvestmentMemo(BaseModel):

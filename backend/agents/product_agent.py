@@ -13,7 +13,7 @@ from models.memo import ProductResult
 
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-3.1-pro-preview",
+    model="gemini-3.1-flash-lite",
     temperature=0
 )
 

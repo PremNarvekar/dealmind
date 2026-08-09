@@ -16,14 +16,14 @@ from models.memo import TeamResult
 
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-3.1-pro-preview",
+    model="gemini-3.1-flash-lite",
     temperature=0
 )
 
 tools = [
-    search_founder_profile(),
-    search_founder_history(),
-    search_team_strengths_concerns()
+    search_founder_profile,
+    search_founder_history,
+    search_team_strengths_concerns
 ]
 
 llm_with_tools = llm.bind_tools(tools)
@@ -65,14 +65,14 @@ def team_agent(company_name: str) -> TeamResult:
         )
     ]
     
-    response = llm_with_tools.invoke(message)
+    response = llm_with_tools.invoke(messages)
     messages.append(response)
     
     while response.tool_calls:
         for tool_calls in response.tool_calls:
             
-            tool_name = tool_call['name']
-            tool_args = tool_call['args']
+            tool_name = tool_calls['name']
+            tool_args = tool_calls['args']
             
             if tool_name == 'search_founder_profile':
                 result = search_founder_profile(**tool_args)
@@ -89,7 +89,7 @@ def team_agent(company_name: str) -> TeamResult:
             messages.append(
                 ToolMessage(
                     content=str(result),
-                    tool_call_id=tool_call["id"]
+                    tool_call_id=tool_calls["id"]
                 )
             )
         response = llm_with_tools.invoke(messages)
