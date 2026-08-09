@@ -1,13 +1,13 @@
 import os 
 
-from dotenv import load_dotenv()
+from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 
 
 from tools.team_tools import(
-    search_founder_profile
-    search_founder_history
+    search_founder_profile,
+    search_founder_history,
     search_team_strengths_concerns
     
 )
@@ -21,8 +21,8 @@ llm = ChatGoogleGenerativeAI(
 )
 
 tools = [
-    search_founder_profile()
-    search_founder_history()
+    search_founder_profile(),
+    search_founder_history(),
     search_team_strengths_concerns()
 ]
 
@@ -59,7 +59,7 @@ Focus on information that would actually matter to an investor evaluating the te
 
 def team_agent(company_name: str) -> TeamResult:
     messages = [
-        SystemMessage(content:TEAM_SYSTEM_PROMPT),
+        SystemMessage(content=TEAM_SYSTEM_PROMPT),
         HumanMessage(
             content=f"Research the Team for {company_name}"
         )
