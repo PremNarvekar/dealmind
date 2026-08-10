@@ -1,7 +1,20 @@
 from fastapi import FastAPI
 
-app = FastAPI()
+from api.routes import router
 
-@app.get("/")
-def read_roo():
-    return {"hello world"}
+
+app = FastAPI(
+    title="Startup Investment Research API",
+    version="1.0.0",
+    description="AI-powered startup investment research system",
+)
+
+
+app.include_router(router)
+
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "ok"
+    }

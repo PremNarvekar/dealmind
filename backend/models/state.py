@@ -1,5 +1,8 @@
+from typing import Optional, Annotated
+
 from pydantic import BaseModel
-from typing import Optional
+from langchain_core.messages import AnyMessage
+from langgraph.graph.message import add_messages
 
 from .memo import (
     MarketResult,
@@ -10,35 +13,30 @@ from .memo import (
 
 
 class GraphState(BaseModel):
-    
-    # User Input
-    
+
+    # User input
     company_name: str
 
+    # Agent communication
+    messages: Annotated[list[AnyMessage], add_messages] = []
 
-    # Agent Results
-
+    # Agent results
     market: Optional[MarketResult] = None
     team: Optional[TeamResult] = None
     product: Optional[ProductResult] = None
 
-
-    # Final Output
+    # Final output
     investment_memo: Optional[InvestmentMemo] = None
 
-    
-    # Human In The Loop
+    # Human approval
     approved: bool = False
     auto_approve: bool = False
 
-    
-    # Persistent Memory
+    # Persistent memory
     thread_id: str
 
-
-    # Workflow Status
+    # Workflow status
     status: str = "pending"
 
-
-    # Error Handling
+    # Error handling
     error: Optional[str] = None
