@@ -1,81 +1,64 @@
-from dotenv import load_dotenv
+"""
+Supervisor — coordinates the three specialist agents.
+
+Design decisions:
+- create_supervisor() registers agents as callable tools using their .name
+  attribute. The actual tool names are: market_agent, team_agent, product_agent.
+- The supervisor prompt MUST reference those exact names, not aliases like
+  run_market_research (which would cause silent routing failures).
+- We do NOT compile the supervisor here. graph.py compiles it with the
+  PostgreSQL checkpointer after the lifespan has set it up.
+- The supervisor does NOT perform research itself — it only delegates.
+- The supervisor does NOT generate the investment rating — that is the job
+  of the synthesis node in graph.py.
+- output_mode="last_message" means the supervisor subgraph returns only the
+  final supervisor message, keeping the outer state tidy.
+"""
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.tools import tool
 from langgraph_supervisor import create_supervisor
 
-from .market_agent import market_agent
-from .team_agent import team_agent
-from .product_agent import product_agent
-
-
-load_dotenv()
-
-
-llm = ChatGoogleGenerativeAI(
-    model="gemini-3.1-flash-lite",
-    temperature=0,
-)
-
-
-
+from config import GEMINI_MODEL
+from agents.market_agent import market_agent
+from agents.team_agent import team_agent
+from agents.product_agent import product_agent
 
 
 SUPERVISOR_PROMPT = """
 You are the supervisor of a startup investment research system.
 
-Your job is to coordinate specialist research.
+Your job is to coordinate specialist research agents. You delegate research
+tasks to the appropriate agents and collect their results.
 
-Available specialists:
+Available agents — use EXACTLY these names when calling them:
 
-- run_market_research:
-  market size, competitors, industry trends, and recent news.
+- market_agent
+  Researches: market size, TAM/SAM/SOM, competitors, industry trends,
+  recent news and funding.
 
-- run_team_research:
-  founder backgrounds, previous companies, experience,
-  strengths, and concerns.
+- team_agent
+  Researches: founder backgrounds, previous companies, domain expertise,
+  team strengths, and concerns.
 
-- run_product_research:
-  product, technology, user feedback, strengths,
-  weaknesses, and differentiators.
+- product_agent
+  Researches: product quality, user feedback, tech stack, differentiators,
+  product strengths and weaknesses.
 
 Rules:
-
-1. Delegate research to the appropriate specialist.
-2. Do not perform the research yourself.
-3. Do not invent information.
-4. Use all relevant specialists when the request requires
-   market, team, and product analysis.
-5. Collect the research results.
-6. Do not make the final investment rating yet.
-"""
+1. For a complete investment analysis, always call all three agents.
+2. Delegate — do not research anything yourself.
+3. Do not invent or assume information.
+4. Do not produce the final investment rating or recommendation.
+5. After all agents have reported, summarize what was completed and stop.
+""".strip()
 
 
-# Supervisor workflow
-workflow = create_supervisor(
-    [
-        market_agent,
-        team_agent,
-        product_agent,
-    ],
+llm = ChatGoogleGenerativeAI(model=GEMINI_MODEL, temperature=0, max_retries=6)
+
+# create_supervisor returns an uncompiled StateGraph.
+# graph.py compiles it with the checkpointer.
+supervisor_workflow = create_supervisor(
+    agents=[market_agent, team_agent, product_agent],
     model=llm,
     prompt=SUPERVISOR_PROMPT,
+    output_mode="last_message",
 )
-
-
-app = workflow.compile()
-
-
-# if __name__ == "__main__":
-
-#     result = app.invoke(
-#         {
-#             "messages": [
-#                 {
-#                     "role": "user",
-#                     "content": "Research Stripe as an investment opportunity."
-#                 }
-#             ]
-#         }
-#     )
-
-#     print(result)
