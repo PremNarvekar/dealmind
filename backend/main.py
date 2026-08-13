@@ -43,11 +43,17 @@ async def lifespan(app: FastAPI):
     graph_module.app = compiled_graph  # make it available to any module that imports it
     set_graph(compiled_graph)          # inject into the API router
 
+    # Start the background worker for decoupling
+    import asyncio
+    from api.routes import research_worker
+    worker_task = asyncio.create_task(research_worker())
+
     logger.info("dealmind.ready")
     yield
 
     # ── Shutdown ──────────────────────────────────────────────────────────────
     logger.info("dealmind.shutdown")
+    worker_task.cancel()
     shutdown_checkpointer()
 
 
