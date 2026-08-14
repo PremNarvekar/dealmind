@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Search, CheckCircle2, CircleDashed } from "lucide-react";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
-import { Card, CardContent } from "./ui/Card";
+
 import { Spinner } from "./ui/Spinner";
 import { api } from "../services/api";
 import type { ResearchResponse } from "../types";

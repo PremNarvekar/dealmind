@@ -1,7 +1,7 @@
 import { useState } from "react"
 import type { InvestmentMemo } from "../types"
 import { Badge } from "./ui/Badge"
-import { AlertCircle, CheckCircle2, TrendingUp, Users, Package, FileText, AlertTriangle } from "lucide-react"
+import { AlertCircle, CheckCircle2, AlertTriangle } from "lucide-react"
 
 interface ResultsViewProps {
   memo: InvestmentMemo

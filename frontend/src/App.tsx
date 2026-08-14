@@ -5,8 +5,7 @@ import { ResultsView } from "./components/ResultsView"
 import type { ResearchResponse } from "./types"
 import { Alert } from "./components/ui/Alert"
 import { Button } from "./components/ui/Button"
-import { Spinner } from "./components/ui/Spinner"
-import { api } from "./services/api"
+
 
 function App() {
   const [result, setResult] = useState<ResearchResponse | null>(null)
