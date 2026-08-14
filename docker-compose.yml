@@ -1,0 +1,82 @@
+services:
+
+  postgres:
+    image: postgres:18
+    container_name: dealmind-postgres
+
+    environment:
+      POSTGRES_USER: dealmind
+      POSTGRES_PASSWORD: dealmind_password
+      POSTGRES_DB: dealmind
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    ports:
+      - "5432:5432"
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dealmind -d dealmind"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    networks:
+      - dealmind-network
+
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    container_name: dealmind-backend
+
+    environment:
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      TAVILY_API_KEY: ${TAVILY_API_KEY}
+
+      DATABASE_URL: postgresql://dealmind:dealmind_password@postgres:5432/dealmind
+
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    ports:
+      - "8000:8000"
+
+    networks:
+      - dealmind-network
+
+    restart: unless-stopped
+
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    container_name: dealmind-frontend
+
+    depends_on:
+      backend:
+        condition: service_started
+
+    ports:
+      - "3000:80"
+
+    networks:
+      - dealmind-network
+
+    restart: unless-stopped
+
+
+volumes:
+  postgres_data:
+
+
+networks:
+  dealmind-network:
+    driver: bridge
