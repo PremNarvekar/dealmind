@@ -25,7 +25,7 @@ import json
 import asyncio
 from typing import Optional, Any, AsyncGenerator
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, field_validator
 

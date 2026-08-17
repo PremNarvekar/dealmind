@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: dealmind-frontend
+  namespace: dealmind
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: dealmind-frontend
+
+  template:
+    metadata:
+      labels:
+        app: dealmind-frontend
+
+    spec:
+      containers:
+        - name: frontend
+          image: dealmind-frontend:1.0
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 80
+              protocol: TCP
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 20

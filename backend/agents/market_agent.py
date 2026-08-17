@@ -46,6 +46,7 @@ market_agent = create_agent(
     model=llm,
     tools=[
         search_market_size,
+      
         search_competitors,
         search_recent_news,
     ],

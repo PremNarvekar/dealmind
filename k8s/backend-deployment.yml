@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: dealmind-backend
+  namespace: dealmind
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: dealmind-backend
+
+  template:
+    metadata:
+      labels:
+        app: dealmind-backend
+
+    spec:
+      containers:
+        - name: backend
+          image: dealmind-backend:1.0
+          imagePullPolicy: IfNotPresent
+
+          envFrom:
+            - secretRef:
+                name: dealmind-backend-secret
+
+          ports:
+            - containerPort: 8000
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3

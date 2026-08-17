@@ -15,3 +15,5 @@ agent_logs.json
 
 dist/
 build/
+
+k8s/backend-secret.yml
