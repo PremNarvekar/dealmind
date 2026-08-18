@@ -1,6 +1,6 @@
 import type { ResearchRequest, ResearchResponse } from "../types";
 
-const API_BASE_URL = "/api";
+const API_BASE_URL = "https://dealmind-wjhm.onrender.com/api";
 
 export const api = {
   /**
