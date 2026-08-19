@@ -1,8 +1,15 @@
 import * as React from "react"
 import { Briefcase, LayoutDashboard, Settings, Code, FileText } from "lucide-react"
 import { cn } from "../../lib/utils"
+import type { Page } from "../../App"
 
-export function Layout({ children }: { children: React.ReactNode }) {
+interface LayoutProps {
+  children: React.ReactNode
+  activePage: Page
+  onNavigate: (page: Page) => void
+}
+
+export function Layout({ children, activePage, onNavigate }: LayoutProps) {
   return (
     <div className="flex h-screen bg-background overflow-hidden selection:bg-primary selection:text-white">
       {/* Sidebar Navigation */}
@@ -13,13 +20,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
         
         <nav className="flex-1 overflow-y-auto py-8 px-4 space-y-2">
-          <NavItem icon={<LayoutDashboard size={18} />} label="Research Desk" isActive />
-          <NavItem icon={<FileText size={18} />} label="Investment Memos" />
-          <NavItem icon={<Code size={18} />} label="API Keys" />
+          <NavItem icon={<LayoutDashboard size={18} />} label="Research Desk" isActive={activePage === "research"} onClick={() => onNavigate("research")} />
+          <NavItem icon={<FileText size={18} />} label="Investment Memos" isActive={activePage === "memos"} onClick={() => onNavigate("memos")} />
+          <NavItem icon={<Code size={18} />} label="API Keys" isActive={activePage === "apikeys"} onClick={() => onNavigate("apikeys")} />
         </nav>
         
         <div className="p-4 mb-4">
-          <NavItem icon={<Settings size={18} />} label="Settings" />
+          <NavItem icon={<Settings size={18} />} label="Settings" isActive={activePage === "settings"} onClick={() => onNavigate("settings")} />
         </div>
       </aside>
 
@@ -45,17 +52,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
 function NavItem({ 
   icon, 
   label, 
-  isActive = false 
+  isActive = false,
+  onClick,
 }: { 
   icon: React.ReactNode; 
   label: string; 
-  isActive?: boolean 
+  isActive?: boolean;
+  onClick?: () => void;
 }) {
   return (
-    <a
-      href="#"
+    <button
+      type="button"
+      onClick={onClick}
       className={cn(
-        "flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group",
+        "flex items-center w-full px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group text-left",
         isActive 
           ? "bg-primary text-primary-foreground shadow-sm" 
           : "text-muted-foreground hover:bg-muted/80 hover:text-primary"
@@ -65,6 +75,6 @@ function NavItem({
         {icon}
       </span>
       {label}
-    </a>
+    </button>
   )
 }

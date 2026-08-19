@@ -61,6 +61,8 @@ export function ResearchForm({ onStart, onSuccess, onError }: ResearchFormProps)
       <form onSubmit={handleSubmit} className="relative flex items-center w-full animate-slide-up" style={{ animationDelay: '100ms' }}>
         <Search className="absolute left-6 w-5 h-5 text-muted-foreground" />
         <Input
+          id="company-name"
+          name="company_name"
           className="pl-14 pr-36 h-16 text-lg bg-white shadow-premium border-transparent rounded-2xl focus-visible:ring-1 focus-visible:ring-primary/20 transition-all"
           placeholder="e.g. Stripe, Vercel, Anthropic..."
           value={companyName}
@@ -89,9 +91,11 @@ export function ResearchForm({ onStart, onSuccess, onError }: ResearchFormProps)
       <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-muted-foreground animate-slide-up" style={{ animationDelay: '200ms' }}>
         <span className="font-medium">Research Scope:</span>
         {["market", "team", "product"].map((agent) => (
-          <label key={agent} className="flex items-center space-x-2 cursor-pointer group">
+          <label key={agent} htmlFor={`agent-${agent}`} className="flex items-center space-x-2 cursor-pointer group">
             <input 
               type="checkbox"
+              id={`agent-${agent}`}
+              name={`agent_${agent}`}
               className="rounded-sm border-border text-primary focus:ring-primary h-4 w-4 transition-colors"
               checked={selectedAgents.includes(agent)}
               onChange={(e) => {
